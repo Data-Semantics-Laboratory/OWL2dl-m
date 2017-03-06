@@ -2,8 +2,15 @@ package org.dase.cogan.owl2dl_m;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.OWLRendererException;
@@ -60,7 +67,7 @@ public class App extends Application
 		fc.setTitle("Choose OWL Files");
 		this.dc = new DirectoryChooser();
 		dc.setTitle("Choose Output Folder");
-		
+
 		// Stage
 		GridPane gui = new GridPane();
 		gui.setPadding(new Insets(10));
@@ -144,9 +151,9 @@ public class App extends Application
 							return null;
 						}
 					};
-					
+
 					(new Thread(task)).start();
-					
+
 				}
 				else
 				{
@@ -219,28 +226,63 @@ public class App extends Application
 						log.appendText("\tLoaded.\n");
 					}
 				});
-				
-				// Write the ontology to LaTex conversion provided by the LaTeX
-				// renderer
-				String outputfile = outputDir.getPath() + File.separatorChar + stripExt(file.getName()) + ".tex";
-				File ofile = new File(outputfile);
-				PrintWriter pw = new PrintWriter(ofile);
-				latex.render(ontology, pw);
 
-				Platform.runLater(new Runnable()
+				try
 				{
-					public void run()
+					// Write to a Temporary File
+					Path p = Files.createTempFile("temp", "");
+					PrintWriter tpw = new PrintWriter(p.toFile());
+					latex.render(ontology, tpw);
+					tpw.close();
+
+					// Update Log
+					Platform.runLater(new Runnable()
 					{
-						log.appendText("\tRendered.\n");
+						public void run()
+						{
+							log.appendText("\tRendered.\n");
+						}
+					});
+
+					// Do post processing
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							log.appendText("\tStarted Post-processing.\n");
+						}
+					});
+
+					// Write the ontology to LaTex conversion
+					// Prepare permanent output file
+					String outputfile = outputDir.getPath() + File.separatorChar + stripExt(file.getName()) + ".tex";
+					File ofile = new File(outputfile);
+					PrintWriter pw = new PrintWriter(ofile);
+					// Get a scanner to the temp file
+					Scanner reader = new Scanner(p.toFile());
+					while(reader.hasNextLine())
+					{
+						String line = reader.nextLine();
+						pw.println(splitLine(line));
 					}
-				});
-				
-				// Clean up
-				pw.close();
-			}
-			catch(FileNotFoundException e)
-			{
-				System.out.println("File: " + file + " could not be found.");
+
+					// Clean up
+					pw.close();
+					reader.close();
+
+					Platform.runLater(new Runnable()
+					{
+						public void run()
+						{
+							log.appendText("\tFinished Post-processing.\n");
+						}
+					});
+				}
+				catch(IOException e)
+				{
+					System.out.println("IO Failure.");
+				}
+
 			}
 			catch(OWLOntologyCreationException e)
 			{
@@ -252,6 +294,79 @@ public class App extends Application
 			}
 		}
 
+	}
+
+	public static String splitLine(String s)
+	{
+		if(getLineLength(s) > 125)
+		{
+			// Wrap in multiline environment
+			String construct = "\\begin{split}\n";
+			// Find a reasonable split point
+			construct += findSplit(s);
+			// Exit multiline
+			construct += "\n\\end{split}";
+
+			s = construct;
+		}
+
+		return s;
+	}
+
+	public static String findSplit(String s)
+	{
+		// Find a reasonable split point
+		String regex = ",|\\\\sqcap|\\\\sqcup";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(s);
+		m.region(100, s.length());
+		String construct = "";
+		if(m.find())
+		{
+			construct += s.substring(0, m.start());
+			construct += "\\\\&\n";
+			String sub = s.substring(m.start());
+			construct += (sub.length() > 125) ? findSplit(sub) : sub;
+		}
+		else
+		{
+			construct += s;
+		}
+		return construct;
+	}
+
+	public static int getLineLength(String s)
+	{
+		// A list of escaped symbol sequences
+		String[] symbols = { "\\\\sqcap", "\\\\sqcup", "\\\\lnot", "\\\\forall", "\\\\exists", "hasValue", "\\\\geq",
+		        "\\\\leq", ">", "<", "=", "&\\\\sqsubseteq", "&\\\\equiv", "&\\\\not\\\\equiv", "\\\\top", "\\\\bot",
+		        "\\\\circ", "\\^-" };
+
+		// Replace all latex symbols
+		for(String sym : symbols)
+		{
+			s = s.replaceAll(sym, "1");
+		}
+		// Replace quotes and carats and self sequence
+		s = s.replaceAll("``", "\"").replaceAll("\\\\\\^\\{\\}", "^").replaceAll("''", "\"")
+		        .replaceAll("\\\\textsf\\{Self\\}", "self");
+		// Extract contents of \text{.*} and replace with capture
+		String regex = "\\\\text\\{(.*?)\\}";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(s);
+		ArrayList<String> matches = new ArrayList<>();
+		while(m.find())
+		{
+			matches.add(m.group(1));
+		}
+		for(String r : matches)
+		{
+			s = s.replaceFirst(regex, r);
+		}
+		// Finally strip all remaining backslashes
+		s = s.replace("\\", "");
+
+		return s.length();
 	}
 
 	/**
