@@ -320,11 +320,10 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLObjectOneOf ce)
 	{
+		writeOpenBrace();
 		for(Iterator<? extends OWLIndividual> it = ce.individuals().iterator(); it.hasNext();)
 		{
-			writeOpenBrace();
 			it.next().accept(this);
-			writeCloseBrace();
 			if(it.hasNext())
 			{
 				writeSpace();
@@ -332,6 +331,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 				writeSpace();
 			}
 		}
+		writeCloseBrace();
 	}
 
 	@Override
@@ -879,11 +879,10 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDataOneOf node)
 	{
+		writeOpenBrace();
 		for(Iterator<? extends OWLLiteral> it = node.values().iterator(); it.hasNext();)
 		{
-			writeOpenBrace();
 			it.next().accept(this);
-			writeCloseBrace();
 			if(it.hasNext())
 			{
 				writeSpace();
@@ -891,6 +890,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 				writeSpace();
 			}
 		}
+		writeCloseBrace();
 	}
 
 	@Override
@@ -959,7 +959,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 		write("``");
 		write("\\text{" + node.getLiteral() + "}");
 		write("\\text{''\\^{}\\^{}}");
-		write(getRendering(node.getDatatype()));
+		write("\\text{" + getRendering(node.getDatatype()) + "}");
 		writeCloseBrace();
 	}
 
