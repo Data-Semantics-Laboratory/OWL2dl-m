@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -19,6 +20,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLPropertyExpression;
 import org.semanticweb.owlapi.model.OWLRuntimeException;
 import org.semanticweb.owlapi.model.parameters.Imports;
 import org.semanticweb.owlapi.util.OWLEntityComparator;
@@ -52,10 +54,8 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 
 			// Begin preamble
 			w.write("\\documentclass{article}\n");
-			// For those pesky multiline equations. Breqn currently breaks with
-			// certain amsmath commands.
-			w.write("\\usepackage{amsmath}\n");
-			w.write("\\usepackage{breqn}\n");
+			w.write("\\usepackage{amsmath}\n"); // amsmath must come first.
+			w.write("\\usepackage{breqn}\n"); // For multiline equations.
 			w.write("\\parskip 0pt\n");
 			w.write("\\parindent 0pt\n");
 			w.write("\\oddsidemargin 0cm\n");
@@ -65,15 +65,13 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 			MyLatexObjectVisitor renderer = new MyLatexObjectVisitor(w, o.getOWLOntologyManager().getOWLDataFactory());
 			Collection<OWLClass> clses = sortEntities(o.classesInSignature());
 
-			// Write Classes
 			if(!clses.isEmpty())
 			{
-				w.write("\\subsection*{Classes}\n\n");
-			}
-			
-			for(OWLClass cls : clses)
-			{
-				writeEntity(w, renderer, cls, sortAxioms(o.axioms(cls)));
+				w.write("\\subsection*{Classes}\n");
+				for(OWLClass cls : clses)
+				{
+					writeEntity(w, renderer, cls, sortAxioms(o.axioms(cls)));
+				}
 			}
 
 			w.write("\\section*{Object properties}");
@@ -84,14 +82,14 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 			w.write("\\section*{Data properties}");
 			o.dataPropertiesInSignature().sorted(entityComparator)
 			        .forEach(prop -> writeEntity(w, renderer, prop, sortAxioms(o.axioms(prop))));
+
 			w.write("\\section*{Individuals}");
 			o.individualsInSignature().sorted(entityComparator)
 			        .forEach(i -> writeEntity(w, renderer, i, sortAxioms(o.axioms(i))));
 
-			 w.write("\\section*{Datatypes}");
-			 o.datatypesInSignature().sorted(entityComparator)
-			 .forEach(type -> writeEntity(w, renderer, type,
-			 sortAxioms(o.axioms(type, Imports.EXCLUDED))));
+			w.write("\\section*{Datatypes}");
+			o.datatypesInSignature().sorted(entityComparator)
+			        .forEach(type -> writeEntity(w, renderer, type, sortAxioms(o.axioms(type, Imports.EXCLUDED))));
 
 			w.write("\\end{document}\n");
 			w.flush();
@@ -106,18 +104,26 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 	        Collection<? extends OWLAxiom> axioms)
 	{
 		writeEntitySection(cls, w);
-		for(OWLAxiom ax : axioms)
+		// Align over subclass and equivalent
+		if(axioms.size() > 0)
 		{
-			renderer.setSubject(cls);
+			// Enter align* environment
+			w.write("\\begin{align*}");
+			// Write entity axioms
+			for(Iterator<? extends OWLAxiom> it = axioms.iterator(); it.hasNext();)
+			{
+				renderer.setSubject(cls);
+				OWLAxiom axiom = it.next();
+				axiom.accept(renderer);
 
-			// Enter Mathmode
-			w.write("$");
-			// Render
-			ax.accept(renderer);
-			// Exit Mathmode
-			w.write("$");
-			
-			w.write("\n\n");
+				if(it.hasNext())
+				{
+					w.write("\\\\");
+				}
+
+				w.write("\n");
+			}
+			w.write("\\end{align*}\n");
 		}
 	}
 

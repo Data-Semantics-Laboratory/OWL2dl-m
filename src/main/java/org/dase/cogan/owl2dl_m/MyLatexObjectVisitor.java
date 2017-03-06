@@ -63,11 +63,11 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	/** EQUAL. */
 	public static final String		EQUAL		= "=";
 	/** SUBCLASS. */
-	public static final String		SUBCLASS	= "\\sqsubseteq ";
+	public static final String		SUBCLASS	= "&\\sqsubseteq ";
 	/** EQUIV. */
-	public static final String		EQUIV		= "\\equiv ";
+	public static final String		EQUIV		= "&\\equiv ";
 	/** NOT_EQUIV. */
-	public static final String		NOT_EQUIV	= "\\not\\equiv ";
+	public static final String		NOT_EQUIV	= "&\\not\\equiv ";
 	/** TOP. */
 	public static final String		TOP			= "\\top ";
 	/** BOTTOM. */
@@ -398,52 +398,18 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLEquivalentClassesAxiom axiom)
 	{
 		List<OWLClassExpression> classExpressions = asList(axiom.classExpressions());
-		if(classExpressions.size() > 2)
+		write("EquivalentClasses(");
+		// Write each class
+		for(Iterator<OWLClassExpression> it = classExpressions.iterator(); it.hasNext();)
 		{
-			Set<Set<OWLClassExpression>> rendered = new HashSet<>();
-			for(OWLClassExpression left : classExpressions)
+			it.next().accept(this);
+			if(it.hasNext())
 			{
-				for(OWLClassExpression right : classExpressions)
-				{
-					if(left != right)
-					{
-						Set<OWLClassExpression> cur = CollectionFactory.createSet(left, right);
-						if(!rendered.contains(cur))
-						{
-							rendered.add(cur);
-							left.accept(this);
-							writeSpace();
-							write(EQUIV);
-							writeSpace();
-							right.accept(this);
-						}
-					}
-				}
+				write(",");
+				writeSpace();
 			}
 		}
-		else if(classExpressions.size() == 2)
-		{
-			Iterator<OWLClassExpression> it = classExpressions.iterator();
-			OWLClassExpression descA = it.next();
-			OWLClassExpression descB = it.next();
-			OWLClassExpression lhs;
-			OWLClassExpression rhs;
-			if(subject.equals(descA))
-			{
-				lhs = descA;
-				rhs = descB;
-			}
-			else
-			{
-				lhs = descB;
-				rhs = descA;
-			}
-			lhs.accept(this);
-			writeSpace();
-			write(EQUIV);
-			writeSpace();
-			rhs.accept(this);
-		}
+		write(")");
 	}
 
 	@Override
