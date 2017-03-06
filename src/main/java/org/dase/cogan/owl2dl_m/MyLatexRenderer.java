@@ -108,7 +108,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 		if(axioms.size() > 0)
 		{
 			// Enter align* environment
-			w.write("\\begin{gather*}\n");
+			w.write("\\begin{align*}\n");
 			// Write entity axioms
 			for(Iterator<? extends OWLAxiom> it = axioms.iterator(); it.hasNext();)
 			{
@@ -123,7 +123,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 
 				w.write("\n");
 			}
-			w.write("\\end{gather*}\n");
+			w.write("\\end{align*}\n");
 		}
 	}
 

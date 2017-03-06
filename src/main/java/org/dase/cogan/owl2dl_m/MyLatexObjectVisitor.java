@@ -63,11 +63,11 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	/** EQUAL. */
 	public static final String		EQUAL		= "=";
 	/** SUBCLASS. */
-	public static final String		SUBCLASS	= "\\sqsubseteq ";
+	public static final String		SUBCLASS	= "&\\sqsubseteq ";
 	/** EQUIV. */
-	public static final String		EQUIV		= "\\equiv ";
+	public static final String		EQUIV		= "&\\equiv ";
 	/** NOT_EQUIV. */
-	public static final String		NOT_EQUIV	= "\\not\\equiv ";
+	public static final String		NOT_EQUIV	= "&\\not\\equiv ";
 	/** TOP. */
 	public static final String		TOP			= "\\top ";
 	/** BOTTOM. */
@@ -380,7 +380,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 		List<OWLClassExpression> classExpressions = asList(axiom.classExpressions());
 
 		// Use AllDisjoint syntax to prevent huge number of axioms
-		write("AllDisjoint(");
+		write("AllDisjoint&(");
 		// Write each class
 		for(Iterator<OWLClassExpression> it = classExpressions.iterator(); it.hasNext();)
 		{
@@ -399,7 +399,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLEquivalentClassesAxiom axiom)
 	{
 		List<OWLClassExpression> classExpressions = asList(axiom.classExpressions());
-		write("EquivalentClasses(");
+		write("EquivalentClasses&(");
 		// Write each class
 		for(Iterator<OWLClassExpression> it = classExpressions.iterator(); it.hasNext();)
 		{
@@ -533,7 +533,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLDisjointObjectPropertiesAxiom axiom)
 	{
 		write("Disjoint");
-		write("(");
+		write("&(");
 		for(Iterator<OWLObjectPropertyExpression> it = axiom.properties().iterator(); it.hasNext();)
 		{
 			it.next().accept(this);
@@ -549,10 +549,8 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDisjointUnionAxiom axiom)
 	{
-		// DO OTHER AXIOM HERE!
-
 		write("DisjointClasses");
-		write("(");
+		write("&(");
 		axiom.classExpressions().forEach(p -> {
 			p.accept(this);
 			writeSpace();
@@ -665,7 +663,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLIrreflexiveObjectPropertyAxiom axiom)
 	{
 		write("IrreflexiveObjectProperty");
-		write("(");
+		write("&(");
 		axiom.getProperty().accept(this);
 		write(")");
 	}
@@ -758,7 +756,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLReflexiveObjectPropertyAxiom axiom)
 	{
 		write("ReflexiveProperty");
-		write("(");
+		write("&(");
 		axiom.getProperty().accept(this);
 		write(")");
 	}
@@ -803,7 +801,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	public void visit(OWLTransitiveObjectPropertyAxiom axiom)
 	{
 		write("TransitiveProperty");
-		write("(");
+		write("&(");
 		axiom.getProperty().accept(this);
 		write(")");
 	}
@@ -928,9 +926,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 		node.getDatatype().accept(this);
 		write(":");
 
-		// Need to know when to stop printing "and"
 		List<OWLFacetRestriction> facetRestrictions = asList(node.facetRestrictions());
-
 		for(int i = 0; i < facetRestrictions.size(); i++)
 		{
 			OWLFacetRestriction r = facetRestrictions.get(i);
