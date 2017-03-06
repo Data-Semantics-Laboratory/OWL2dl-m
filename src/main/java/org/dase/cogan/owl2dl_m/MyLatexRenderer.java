@@ -54,6 +54,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 			w.write("\\documentclass{article}\n");
 			// For those pesky multiline equations. Breqn currently breaks with
 			// certain amsmath commands.
+			w.write("\\usepackage{amsmath}\n");
 			w.write("\\usepackage{breqn}\n");
 			w.write("\\parskip 0pt\n");
 			w.write("\\parindent 0pt\n");
@@ -108,7 +109,14 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 		for(OWLAxiom ax : axioms)
 		{
 			renderer.setSubject(cls);
+
+			// Enter Mathmode
+			w.write("$");
+			// Render
 			ax.accept(renderer);
+			// Exit Mathmode
+			w.write("$");
+			
 			w.write("\n\n");
 		}
 	}

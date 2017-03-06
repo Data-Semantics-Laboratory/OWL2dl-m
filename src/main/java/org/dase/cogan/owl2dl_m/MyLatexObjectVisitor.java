@@ -41,43 +41,43 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 
 	// @formatter:off
 	/** AND. */
-	public static final String		AND			= "\\ensuremath{\\sqcap}";
+	public static final String		AND			= "\\sqcap ";
 	/** OR. */
-	public static final String		OR			= "\\ensuremath{\\sqcup}";
+	public static final String		OR			= "\\sqcup ";
 	/** NOT. */
-	public static final String		NOT			= "\\ensuremath{\\lnot}";
+	public static final String		NOT			= "\\lnot ";
 	/** ALL. */
-	public static final String		ALL			= "\\ensuremath{\\forall}";
+	public static final String		ALL			= "\\forall ";
 	/** SOME. */
-	public static final String		SOME		= "\\ensuremath{\\exists}";
+	public static final String		SOME		= "\\exists ";
 	/** HASVALUE. */
-	public static final String		HASVALUE	= "\\ensuremath{hasValue}";
+	public static final String		HASVALUE	= "hasValue ";
 	/** MIN. */
-	public static final String		MIN			= "\\ensuremath{\\geq}";
+	public static final String		MIN			= "\\geq";
 	/** MAX. */
-	public static final String		MAX			= "\\ensuremath{\\leq}";
+	public static final String		MAX			= "\\leq";
 	/** MINEX. */
-	public static final String		MINEX		= "\\ensuremath{>}";
+	public static final String		MINEX		= ">";
 	/** MAXEX. */
-	public static final String		MAXEX		= "\\ensuremath{<}";
+	public static final String		MAXEX		= "<";
 	/** EQUAL. */
-	public static final String		EQUAL		= "\\ensuremath{=}";
+	public static final String		EQUAL		= "=";
 	/** SUBCLASS. */
-	public static final String		SUBCLASS	= "\\ensuremath{\\sqsubseteq}";
+	public static final String		SUBCLASS	= "\\sqsubseteq ";
 	/** EQUIV. */
-	public static final String		EQUIV		= "\\ensuremath{\\equiv}";
+	public static final String		EQUIV		= "\\equiv ";
 	/** NOT_EQUIV. */
-	public static final String		NOT_EQUIV	= "\\ensuremath{\\not\\equiv}";
+	public static final String		NOT_EQUIV	= "\\not\\equiv ";
 	/** TOP. */
-	public static final String		TOP			= "\\ensuremath{\\top}";
+	public static final String		TOP			= "\\top ";
 	/** BOTTOM. */
-	public static final String		BOTTOM		= "\\ensuremath{\\bot}";
+	public static final String		BOTTOM		= "\\bot ";
 	/** SELF. */
-	public static final String		SELF		= "\\ensuremath{\\textsf{Self}";
+	public static final String		SELF		= "\\textsf{Self} ";
 	/** CIRC. */
-	public static final String		CIRC		= "\\ensuremath{\\circ}";
+	public static final String		CIRC		= "\\circ ";
 	/** INVERSE */
-	public static final String		INVERSE		= "\\ensuremath{^-}";
+	public static final String		INVERSE		= "^- ";
 	// @formatter:on
 	private OWLObject				subject;
 	private final LatexWriter		writer;
@@ -313,7 +313,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	{
 		String name = escapeName(shortFormProvider.getShortForm(ce));
 
-		write(name.equals("Thing") ? TOP : name);
+		write(name.equals("Thing") ? TOP : "\\text{" + name + "}");
 	}
 
 	@Override
@@ -336,19 +336,31 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDataProperty property)
 	{
-		write(escapeName(shortFormProvider.getShortForm(property)));
+		String s = "\\text{";
+		s += escapeName(shortFormProvider.getShortForm(property));
+		s += "}";
+		
+		write(s);
 	}
 
 	@Override
 	public void visit(OWLObjectProperty property)
 	{
-		write(escapeName(shortFormProvider.getShortForm(property)));
+		String s = "\\text{";
+		s += escapeName(shortFormProvider.getShortForm(property));
+		s += "}";
+		
+		write(s);
 	}
 
 	@Override
 	public void visit(OWLNamedIndividual individual)
 	{
-		write(escapeName(shortFormProvider.getShortForm(individual)));
+		String s = "\\text{";
+		s += escapeName(shortFormProvider.getShortForm(individual));
+		s += "}";
+		
+		write(s);
 	}
 
 	@Override
@@ -848,7 +860,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 		write(EQUIV);
 		writeSpace();
 		axiom.getProperty().accept(this);
-		write("\\ensuremath{^-}");
+		write(INVERSE);
 	}
 
 	@Override
