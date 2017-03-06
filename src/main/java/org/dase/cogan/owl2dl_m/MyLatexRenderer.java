@@ -54,7 +54,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 
 			// Begin preamble
 			w.write("\\documentclass{article}\n");
-			w.write("\\usepackage{amsmath}\n"); // amsmath must come first.
+			w.write("\\usepackage[fleqn]{amsmath}\n"); // amsmath must come first.
 			w.write("\\usepackage{breqn}\n"); // For multiline equations.
 			w.write("\\parskip 0pt\n");
 			w.write("\\parindent 0pt\n");
@@ -108,7 +108,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 		if(axioms.size() > 0)
 		{
 			// Enter align* environment
-			w.write("\\begin{align*}");
+			w.write("\\begin{gather*}\n");
 			// Write entity axioms
 			for(Iterator<? extends OWLAxiom> it = axioms.iterator(); it.hasNext();)
 			{
@@ -123,7 +123,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 
 				w.write("\n");
 			}
-			w.write("\\end{align*}\n");
+			w.write("\\end{gather*}\n");
 		}
 	}
 

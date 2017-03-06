@@ -63,11 +63,11 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	/** EQUAL. */
 	public static final String		EQUAL		= "=";
 	/** SUBCLASS. */
-	public static final String		SUBCLASS	= "&\\sqsubseteq ";
+	public static final String		SUBCLASS	= "\\sqsubseteq ";
 	/** EQUIV. */
-	public static final String		EQUIV		= "&\\equiv ";
+	public static final String		EQUIV		= "\\equiv ";
 	/** NOT_EQUIV. */
-	public static final String		NOT_EQUIV	= "&\\not\\equiv ";
+	public static final String		NOT_EQUIV	= "\\not\\equiv ";
 	/** TOP. */
 	public static final String		TOP			= "\\top ";
 	/** BOTTOM. */
