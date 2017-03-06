@@ -74,20 +74,20 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 				}
 			}
 
-			w.write("\\section*{Object properties}");
+			w.write("\\section*{Object properties}\n");
 			sortEntities(o.objectPropertiesInSignature()).forEach(p -> {
 				writeEntity(w, renderer, p, sortAxioms(o.axioms(p)));
 			});
 
-			w.write("\\section*{Data properties}");
+			w.write("\\section*{Data properties}\n");
 			o.dataPropertiesInSignature().sorted(entityComparator)
 			        .forEach(prop -> writeEntity(w, renderer, prop, sortAxioms(o.axioms(prop))));
 
-			w.write("\\section*{Individuals}");
+			w.write("\\section*{Individuals}\n");
 			o.individualsInSignature().sorted(entityComparator)
 			        .forEach(i -> writeEntity(w, renderer, i, sortAxioms(o.axioms(i))));
 
-			w.write("\\section*{Datatypes}");
+			w.write("\\section*{Datatypes}\n");
 			o.datatypesInSignature().sorted(entityComparator)
 			        .forEach(type -> writeEntity(w, renderer, type, sortAxioms(o.axioms(type, Imports.EXCLUDED))));
 
