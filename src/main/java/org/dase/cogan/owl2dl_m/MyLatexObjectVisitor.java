@@ -551,10 +551,17 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	{
 		write("DisjointClasses");
 		write("&(");
-		axiom.classExpressions().forEach(p -> {
-			p.accept(this);
-			writeSpace();
-		});
+		
+		for(Iterator<OWLClassExpression> it = axiom.classExpressions().iterator(); it.hasNext();)
+		{
+			it.next().accept(this);
+			if(it.hasNext())
+			{
+				write(",");
+				writeSpace();
+			}
+		}
+		
 		write(")");
 	}
 
