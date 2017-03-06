@@ -119,7 +119,8 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 
 	private void writeSpace()
 	{
-		writer.writeSpace();
+		//writer.writeSpace();
+		writer.write(" ");
 	}
 
 	private void write(Object o)
@@ -482,7 +483,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLSubDataPropertyOfAxiom axiom)
 	{
-		axiom.getSubProperty();
+		axiom.getSubProperty().accept(this);
 		writeSpace();
 		write(SUBCLASS);
 		writeSpace();
@@ -948,7 +949,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDatatype node)
 	{
-		write(getRendering(node));
+		write("\\text{" + getRendering(node) + "}");
 	}
 
 	@Override
@@ -956,8 +957,8 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	{
 		writeOpenBrace();
 		write("``");
-		write(node.getLiteral());
-		write("\"\\^{}\\^{}");
+		write("\\text{" + node.getLiteral() + "}");
+		write("\\text{''\\^{}\\^{}}");
 		write(getRendering(node.getDatatype()));
 		writeCloseBrace();
 	}
