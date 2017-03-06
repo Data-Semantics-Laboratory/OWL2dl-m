@@ -57,8 +57,10 @@ public class App extends Application
 		// Private Fields
 		this.primaryStage = stage;
 		this.fc = new FileChooser();
+		fc.setTitle("Choose OWL Files");
 		this.dc = new DirectoryChooser();
-
+		dc.setTitle("Choose Output Folder");
+		
 		// Stage
 		GridPane gui = new GridPane();
 		gui.setPadding(new Insets(10));
