@@ -375,62 +375,23 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDisjointClassesAxiom axiom)
 	{
+		// Get Classes
 		List<OWLClassExpression> classExpressions = asList(axiom.classExpressions());
-		if(classExpressions.size() != 2)
+
+		// Use AllDisjoint syntax to prevent huge number of axioms
+		write("AllDisjoint(");
+		// Write each class
+		for(Iterator<OWLClassExpression> it = classExpressions.iterator(); it.hasNext();)
 		{
-			for(OWLClassExpression left : classExpressions)
+			it.next().accept(this);
+			if(it.hasNext())
 			{
-				for(OWLClassExpression right : classExpressions)
-				{
-					if(left != right)
-					{
-						if(left.equals(subject))
-						{
-							left.accept(this);
-							writeSpace();
-							write(SUBCLASS);
-							writeSpace();
-							write(NOT);
-							right.accept(this);
-						}
-						else
-						{
-							right.accept(this);
-							writeSpace();
-							write(SUBCLASS);
-							writeSpace();
-							write(NOT);
-							left.accept(this);
-						}
-						writer.writeNewLine();
-					}
-				}
+				write(",");
+				writeSpace();
 			}
 		}
-		else
-		{
-			Iterator<OWLClassExpression> it = classExpressions.iterator();
-			OWLClassExpression descA = it.next();
-			OWLClassExpression descB = it.next();
-			OWLClassExpression lhs;
-			OWLClassExpression rhs;
-			if(descA.equals(subject))
-			{
-				lhs = descA;
-				rhs = descB;
-			}
-			else
-			{
-				lhs = descB;
-				rhs = descA;
-			}
-			lhs.accept(this);
-			writeSpace();
-			write(SUBCLASS);
-			writeSpace();
-			write(NOT);
-			rhs.accept(this);
-		}
+		
+		write(")");
 	}
 
 	@Override
