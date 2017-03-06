@@ -37,7 +37,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 	{
 		w.write("\\subsubsection*{");
 		w.write(escapeName(shortFormProvider.getShortForm(entity)));
-		w.write("}\n\n");
+		w.write("}\n");
 	}
 
 	private static String escapeName(String name)
@@ -123,7 +123,7 @@ public class MyLatexRenderer extends AbstractOWLRenderer
 
 				w.write("\n");
 			}
-			w.write("\\end{align*}\n");
+			w.write("\\end{align*}\n\n");
 		}
 	}
 
