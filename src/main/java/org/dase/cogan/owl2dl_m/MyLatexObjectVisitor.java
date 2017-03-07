@@ -929,6 +929,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLDatatypeRestriction node)
 	{
+		write("DataTypeRestriction");
 		write("(");
 		node.getDatatype().accept(this);
 		write(":");
