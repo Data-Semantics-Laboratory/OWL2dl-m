@@ -324,7 +324,7 @@ public class App extends Application
 		if(m.find())
 		{
 			construct += s.substring(0, m.start());
-			construct += "\\\\&\n";
+			construct += "\\\\&\\qquad\n";
 			String sub = s.substring(m.start());
 			construct += (sub.length() > 125) ? findSplit(sub) : sub;
 		}
