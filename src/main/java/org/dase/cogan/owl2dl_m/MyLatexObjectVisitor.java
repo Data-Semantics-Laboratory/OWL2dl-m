@@ -1107,14 +1107,9 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 	@Override
 	public void visit(OWLHasKeyAxiom axiom)
 	{
-		write("HasKey");
-		write("(");
 		axiom.getClassExpression().accept(this);
-		write(")");
-		writeSpace();
-		write("=");
-		writeSpace();
-		writeOpenBrace();
+		write("&~hasKey~");
+		write("(");
 		for(Iterator<OWLPropertyExpression> it = axiom.propertyExpressions().iterator(); it.hasNext();)
 		{
 			it.next().accept(this);
@@ -1124,8 +1119,7 @@ public class MyLatexObjectVisitor implements OWLObjectVisitor
 				writeSpace();
 			}
 		}
-
-		writeCloseBrace();
+		write(")");
 	}
 
 	@Override
