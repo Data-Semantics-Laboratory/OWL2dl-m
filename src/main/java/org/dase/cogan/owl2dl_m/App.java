@@ -41,21 +41,64 @@ import javafx.stage.Stage;
 
 public class App extends Application
 {
-	private FileChooser			fc;
-	private DirectoryChooser	dc;
+	private static FileChooser		fc;
+	private static DirectoryChooser	dc;
 
-	private Stage				primaryStage;
+	private static Stage			primaryStage;
 
-	private TextField			inputField;
-	private TextField			outputField;
-	private List<File>			files;
-	private File				outputDir;
+	private static TextField		inputField;
+	private static TextField		outputField;
+	private static List<File>		files;
+	private static File				outputDir;
 
-	private TextArea			log;
+	private static TextArea			log;
 
 	public static void main(String[] args)
 	{
-		launch();
+		// If there are no arguments, run the gui
+		if(args.length == 0)
+		{
+			launch();
+		}
+		// If there are exactly 2 arguments, assume to run command tool
+		else if(args.length == 2)
+		{
+			System.out.println("Welcome to the console tool.");
+
+			try
+			{
+				System.out.println("Fetching file: " + args[0]);
+
+				File input = new File(args[0]);
+				File output = new File(args[1]);
+
+				if(!input.exists())
+					throw new FileNotFoundException(args[0]);
+
+				if(output.exists())
+					throw new FileNotFoundException(args[1]);
+
+				List<File> files = new ArrayList<>();
+				files.add(input);
+
+				outputDir = output;
+				convertFiles(files);
+
+			}
+			catch(FileNotFoundException e)
+			{
+				System.out.println("Could not find file: " + e.getMessage());
+			}
+
+		}
+		// If there is an incorrect number of arguments, print help
+		else
+		{
+			System.out.println("Please use the following syntax: ");
+			System.out.println("java GUI_Converter.jar input.owl /output");
+			System.out.println("At this point in the time, the tool does not support input directories.");
+			System.out.println("Exiting...");
+		}
 	}
 
 	@Override
@@ -189,7 +232,7 @@ public class App extends Application
 		primaryStage.show();
 	}
 
-	public void convertFiles(List<File> files)
+	public static void convertFiles(List<File> files)
 	{
 
 		MyLatexRenderer latex = new MyLatexRenderer();
